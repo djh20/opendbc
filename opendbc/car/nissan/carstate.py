@@ -11,6 +11,9 @@ ButtonType = structs.CarState.ButtonEvent.Type
 
 TORQUE_SAMPLES = 12
 
+# BOTTOM_MSG value in PROPILOT_HUD_INFO_MSG when the car is waiting for a RES press to continue
+PRESS_RES_TO_RESTART = 4
+
 
 class CarState(CarStateBase, CarStateExt):
   def __init__(self, CP, CP_SP):
@@ -131,6 +134,8 @@ class CarState(CarStateBase, CarStateExt):
     if self.CP.carFingerprint != CAR.NISSAN_ALTIMA:
       self.lkas_hud_msg = copy.copy(cp_adas.vl["PROPILOT_HUD"])
       self.lkas_hud_info_msg = copy.copy(cp_adas.vl["PROPILOT_HUD_INFO_MSG"])
+      # PRO_PILOT holds the car at a standstill and asks for a RES press to restart, which controls turns into a resume request
+      ret.cruiseState.standstill = self.lkas_hud_info_msg["BOTTOM_MSG"] == PRESS_RES_TO_RESTART
 
     CarStateExt.update(self, ret, ret_sp, can_parsers)
 
