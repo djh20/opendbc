@@ -6,12 +6,17 @@ See the LICENSE.md file in the root directory for more details.
 """
 
 from collections import namedtuple
+from enum import IntFlag
 from opendbc.car import structs
 
 
 class NissanSafetyFlagsSP:
   DEFAULT = 0
   LEAF = 1
+
+
+class NissanFlagsSP(IntFlag):
+  STOP_AND_GO = 1
 
 
 ButtonType = structs.CarState.ButtonEvent.Type

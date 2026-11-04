@@ -6,6 +6,7 @@ from opendbc.car.common.conversions import Conversions as CV
 from opendbc.car.interfaces import CarStateBase
 from opendbc.car.nissan.values import CAR, DBC, CarControllerParams
 from opendbc.sunnypilot.car.nissan.carstate_ext import CarStateExt
+from opendbc.sunnypilot.car.nissan.values import NissanFlagsSP
 
 ButtonType = structs.CarState.ButtonEvent.Type
 
@@ -134,8 +135,9 @@ class CarState(CarStateBase, CarStateExt):
     if self.CP.carFingerprint != CAR.NISSAN_ALTIMA:
       self.lkas_hud_msg = copy.copy(cp_adas.vl["PROPILOT_HUD"])
       self.lkas_hud_info_msg = copy.copy(cp_adas.vl["PROPILOT_HUD_INFO_MSG"])
-      # PRO_PILOT holds the car at a standstill and asks for a RES press to restart, which controls turns into a resume request
-      ret.cruiseState.standstill = self.lkas_hud_info_msg["BOTTOM_MSG"] == PRESS_RES_TO_RESTART
+      # ProPILOT holds the car at a standstill and asks for a RES press to restart, which controls turns into a resume request
+      if self.CP_SP.flags & NissanFlagsSP.STOP_AND_GO:
+        ret.cruiseState.standstill = self.lkas_hud_info_msg["BOTTOM_MSG"] == PRESS_RES_TO_RESTART
 
     CarStateExt.update(self, ret, ret_sp, can_parsers)
 

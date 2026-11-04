@@ -8,6 +8,7 @@ from opendbc.car.nissan.values import CAR, CarControllerParams
 from opendbc.car.common.filter_simple import FirstOrderFilter
 
 from opendbc.sunnypilot.car.nissan.icbm import ButtonSendState, IntelligentCruiseButtonManagementInterface
+from opendbc.sunnypilot.car.nissan.values import NissanFlagsSP
 
 VisualAlert = structs.CarControl.HUDControl.VisualAlert
 
@@ -62,8 +63,9 @@ class CarController(CarControllerBase, IntelligentCruiseButtonManagementInterfac
     if self.CP.carFingerprint == CAR.NISSAN_ALTIMA and pcm_cancel_cmd:
       can_sends.append(nissancan.create_acc_cancel_cmd(self.packer, self.car_fingerprint, CS.cruise_throttle_msg))
 
-    # Emulate the RES button press PRO_PILOT asks for to resume from a stop, once per request
-    if CC.cruiseControl.resume and not self.auto_resume_prev and self.button_send_state == ButtonSendState.IDLE and not self.queued_buttons:
+    # Emulate the RES button press ProPILOT asks for to resume from a stop, once per request
+    if (self.CP_SP.flags & NissanFlagsSP.STOP_AND_GO and CC.cruiseControl.resume and not self.auto_resume_prev and
+        self.button_send_state == ButtonSendState.IDLE and not self.queued_buttons):
       self.queued_buttons.append("RES_BUTTON")
     self.auto_resume_prev = CC.cruiseControl.resume
 
